@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pembrolizumab Access Paradox — Market Access Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --ink:        #0D1B2A;
+    --ink-soft:   #2C3E50;
+    --paper:      #F7F4EF;
+    --paper-2:    #EDE9E2;
+    --rule:       #C8BFB0;
+    --red:        #C0392B;
+    --red-soft:   #FDECEA;
+    --blue:       #1B4F8A;
+    --blue-soft:  #D6E4F7;
+    --gold:       #B8860B;
+    --gold-soft:  #FDF3DC;
+    --green:      #1A5C36;
+    --green-soft: #E6F4EC;
+    --accent:     #C0392B;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ─────────────────────────────────────────────────── */
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 48px 64px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 60px,
+      rgba(255,255,255,0.015) 60px,
+      rgba(255,255,255,0.015) 61px
+    );
+    pointer-events: none;
+  }
+
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.1s;
+  }
+
+  .header-title {
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    font-size: clamp(36px, 5vw, 68px);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.25s;
+  }
+
+  .header-title span { color: var(--red); }
+
+  .header-sub {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(247,244,239,0.6);
+    margin-top: 16px;
+    letter-spacing: 0.03em;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.4s;
+  }
+
+  .header-meta {
+    margin-top: 32px;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.55s;
+  }
+
+  .meta-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(247,244,239,0.45);
+    border: 1px solid rgba(247,244,239,0.15);
+    padding: 6px 14px;
+    border-radius: 2px;
+  }
+
+  /* ── MAIN LAYOUT ────────────────────────────────────────────── */
+  main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 48px 48px 80px;
+  }
+
+  /* ── SECTION LABEL ──────────────────────────────────────────── */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    font-size: 28px;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .section-desc {
+    line-height: 1.7;
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 300;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* ── KPI STRIP ──────────────────────────────────────────────── */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--rule);
+    border: 2px solid var(--rule);
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.7s;
+  }
+
+  .kpi {
+    background: var(--paper);
+    padding: 28px 24px;
+    position: relative;
+  }
+
+  .kpi-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 10px;
+  }
+
+  .kpi-value {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    font-size: 42px;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .kpi-value.red   { color: var(--red); }
+  .kpi-value.blue  { color: var(--blue); }
+  .kpi-value.gold  { color: var(--gold); }
+  .kpi-value.green { color: var(--green); }
+
+  .kpi-sub {
+    font-size: 11px;
+    color: #999;
+    margin-top: 6px;
+    font-weight: 300;
+  }
+
+  .kpi-accent-bar {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+  }
+
+  /* ── GRID ───────────────────────────────────────────────────── */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .span-2 { grid-column: span 2; }
+
+  /* ── CARD ───────────────────────────────────────────────────── */
+  .card {
+    background: #fff;
+    border: 1px solid var(--rule);
+    padding: 28px;
+    position: relative;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .card-title {
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .card-desc {
+    line-height: 1.7;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 20px;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  /* ── FUNNEL ─────────────────────────────────────────────────── */
+  .funnel-wrap { width: 100%; }
+
+  .funnel-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    gap: 12px;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .funnel-row.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .funnel-stage {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #aaa;
+    width: 18px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  .funnel-label {
+    font-size: 12px;
+    color: var(--ink-soft);
+    width: 180px;
+    flex-shrink: 0;
+    font-weight: 400;
+  }
+
+  .funnel-bar-wrap {
+    flex: 1;
+    height: 28px;
+    background: var(--paper-2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .funnel-bar {
+    height: 100%;
+    width: 0%;
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+  }
+
+  .funnel-bar-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .funnel-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #aaa;
+    width: 52px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ── FINDING BOX ────────────────────────────────────────────── */
+  .finding {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 24px 28px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .finding-num {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    font-size: 52px;
+    color: var(--red);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .finding-text {
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 300;
+    color: rgba(247,244,239,0.8);
+  }
+
+  .finding-text strong {
+    color: var(--paper);
+    font-weight: 500;
+  }
+
+  /* ── SCENARIO BARS ──────────────────────────────────────────── */
+  .scenario-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .scenario-item { }
+
+  .scenario-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+
+  .scenario-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+
+  .scenario-cost {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: #888;
+  }
+
+  .scenario-track {
+    height: 36px;
+    background: var(--paper-2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scenario-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+  }
+
+  .scenario-fill-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.85);
+    white-space: nowrap;
+  }
+
+  .scenario-pmjay {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background: var(--green);
+    z-index: 2;
+  }
+
+  .scenario-pmjay-label {
+    position: absolute;
+    top: -18px;
+    transform: translateX(-50%);
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--green);
+    white-space: nowrap;
+  }
+
+  .scenario-status {
+    margin-top: 5px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  /* ── PAYER MIX ──────────────────────────────────────────────── */
+  .payer-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .payer-country {
+    border: 1px solid var(--rule);
+    padding: 20px;
+  }
+
+  .payer-flag {
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .payer-bar-wrap {
+    height: 40px;
+    display: flex;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  .payer-seg {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #fff;
+    font-weight: 500;
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .payer-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .legend-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── INSIGHT BOX ────────────────────────────────────────────── */
+  .insight {
+    border-left: 4px solid var(--gold);
+    background: var(--gold-soft);
+    padding: 16px 20px;
+    margin-top: 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  .insight strong { color: var(--gold); }
+
+  /* ── SOURCE BAR ─────────────────────────────────────────────── */
+  footer {
+    background: var(--paper-2);
+    border-top: 1px solid var(--rule);
+    padding: 20px 48px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #aaa;
+    letter-spacing: 0.08em;
+    line-height: 1.8;
+  }
+
+  /* ── ANIMATIONS ─────────────────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:nth-child(1) { animation-delay: 0.8s; }
+  .card:nth-child(2) { animation-delay: 0.95s; }
+  .card:nth-child(3) { animation-delay: 1.1s; }
+  .card:nth-child(4) { animation-delay: 1.25s; }
+
+  /* ── RESPONSIVE ─────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    header { padding: 32px 24px; }
+    main { padding: 32px 20px 60px; }
+    .kpi-strip { grid-template-columns: 1fr 1fr; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .span-2 { grid-column: span 1; }
+    .payer-compare { grid-template-columns: 1fr; }
+    .funnel-label { width: 120px; font-size: 11px; }
+  }
+
+  @media (max-width: 600px) {
+    .kpi-strip { grid-template-columns: 1fr; }
+    .kpi-value {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500; font-size: 34px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────────────────────────────────────── -->
+<header>
+  <div class="header-eyebrow">Market Access Intelligence · Oncology · India vs United States</div>
+  <div class="header-title">Pembrolizumab's<br><span>Access Paradox</span></div>
+  <div class="header-sub">Why the world's top-selling cancer drug reaches fewer than 0.3% of eligible Indian patients</div>
+  <div class="header-meta">
+    <span class="meta-pill">Keytruda® · Merck & Co.</span>
+    <span class="meta-pill">NSCLC + Cervical Cancer</span>
+    <span class="meta-pill">Data: ICMR · CMS · NPPA · MedPAC · Merck FY2023</span>
+    <span class="meta-pill">Analysis: Tushar · B.Pharm III</span>
+  </div>
+</header>
+
+<!-- ── KPI STRIP ──────────────────────────────────────────────────────────── -->
+<main>
+  <div class="kpi-strip">
+    <div class="kpi">
+      <div class="kpi-accent-bar" style="background:var(--blue)"></div>
+      <div class="kpi-label">Eligible Patients · India · 2020</div>
+      <div class="kpi-value blue" data-count="173487" data-fmt="comma">0</div>
+      <div class="kpi-sub">Lung (98,278) + Cervical (75,209) · ICMR NCRP 2020</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent-bar" style="background:var(--red)"></div>
+      <div class="kpi-label">Estimated Patients Treated</div>
+      <div class="kpi-value red">~200</div>
+      <div class="kpi-sub">Model output · author-constructed funnel</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent-bar" style="background:var(--red)"></div>
+      <div class="kpi-label">Effective Access Rate</div>
+      <div class="kpi-value red">&lt;0.3%</div>
+      <div class="kpi-sub">Primary finding · affordability bottleneck</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent-bar" style="background:var(--gold)"></div>
+      <div class="kpi-label">Keytruda Global Revenue FY2023</div>
+      <div class="kpi-value gold">$25.0B</div>
+      <div class="kpi-sub">41.6% of Merck total revenue · +19% YoY</div>
+    </div>
+  </div>
+
+  <!-- ── ROW 1: Funnel + Payer Mix ─────────────────────────────────────────── -->
+  <div class="grid-2" style="margin-bottom:24px">
+
+    <!-- FUNNEL -->
+    <div class="card" style="animation-delay:0.8s">
+      <div class="card-label">01 · Access Funnel</div>
+      <div class="card-title">Patient Journey to Treatment</div>
+      <div class="card-desc">7-stage model. Each bar = patients remaining after drop-off. India only.</div>
+      <div class="funnel-wrap" id="funnelWrap">
+        <!-- rows injected by JS -->
+      </div>
+      <div class="finding">
+        <div class="finding-num">&lt;0.3%</div>
+        <div class="finding-text">
+          Of <strong>1,73,487</strong> annually eligible patients, an estimated <strong>~200</strong> reach pembrolizumab.
+          Primary bottleneck: <strong>affordability</strong>, not diagnosis or infrastructure.
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYER MIX -->
+    <div class="card" style="animation-delay:0.95s">
+      <div class="card-label">04 · Payer Mix</div>
+      <div class="card-title">Who Pays — India vs United States</div>
+      <div class="card-desc">Government coverage vs patient out-of-pocket as % of annual treatment cost.</div>
+
+      <div class="payer-compare">
+        <div class="payer-country">
+          <div class="payer-flag" style="color:var(--blue)">🇺🇸 United States</div>
+          <div class="payer-bar-wrap" id="usBar">
+            <div class="payer-seg" id="usMedicare" style="background:var(--blue)">Medicare ~80%</div>
+            <div class="payer-seg" id="usOop" style="background:#7BA3D4">OOP ~20%</div>
+          </div>
+          <div class="payer-legend">
+            <div class="legend-row"><div class="legend-dot" style="background:var(--blue)"></div>Medicare Part B — ~80% (~$154K/yr)</div>
+            <div class="legend-row"><div class="legend-dot" style="background:#7BA3D4"></div>Patient OOP — ~20% (~$38K/yr)</div>
+          </div>
+          <div class="insight" style="margin-top:12px"><strong>Medicare cap:</strong> Most Advantage plans cap OOP at $3K–7K/yr.</div>
+        </div>
+
+        <div class="payer-country">
+          <div class="payer-flag" style="color:var(--red)">🇮🇳 India</div>
+          <div class="payer-bar-wrap" id="indBar">
+            <div class="payer-seg" id="indPmjay" style="background:var(--green)">PMJAY 15%</div>
+            <div class="payer-seg" id="indOop" style="background:var(--red)">OOP 85%</div>
+          </div>
+          <div class="payer-legend">
+            <div class="legend-row"><div class="legend-dot" style="background:var(--green)"></div>PMJAY — ₹5L limit (~15% of ₹34L cost)</div>
+            <div class="legend-row"><div class="legend-dot" style="background:var(--red)"></div>Patient OOP — ₹29L (~85% of cost)</div>
+          </div>
+          <div class="insight" style="margin-top:12px"><strong>Structural gap:</strong> ₹29L OOP = 15× India's per capita annual income.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ROW 2: Price vs Income + Scenario ─────────────────────────────────── -->
+  <div class="grid-2" style="margin-bottom:24px">
+
+    <!-- PRICE VS INCOME -->
+    <div class="card" style="animation-delay:1.1s">
+      <div class="card-label">02 · Affordability</div>
+      <div class="card-title">Cost as Multiple of Per Capita Income</div>
+      <div class="card-desc">One year of Keytruda equals how many years of average income?</div>
+      <canvas id="affordChart" height="200"></canvas>
+      <div class="insight" style="margin-top:20px">
+        <strong>The arithmetic of exclusion:</strong> In the US, Keytruda costs ~2.5× per capita income — expensive, but bridgeable with insurance.
+        In India, it costs ~17×. Even with PMJAY, the patient still owes 15× their annual income out-of-pocket.
+      </div>
+    </div>
+
+    <!-- SCENARIO ANALYSIS -->
+    <div class="card" style="animation-delay:1.25s">
+      <div class="card-label">05 · Scenario Analysis</div>
+      <div class="card-title">Tiered Pricing Threshold for Access</div>
+      <div class="card-desc">Annual cost vs PMJAY ₹5L ceiling. Green line = reimbursement threshold.</div>
+
+      <div class="scenario-grid" id="scenarioGrid" style="margin-top: 36px;">
+        <!-- injected by JS -->
+      </div>
+
+      <div class="insight" style="margin-top:20px">
+        <strong>Scenario C only</strong> — a 90%+ price reduction — brings annual cost within PMJAY's ₹5 lakh reimbursement limit.
+        Precedent: Merck's HIV tiered pricing in Sub-Saharan Africa.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ROW 3: PMJAY Gap full-width ───────────────────────────────────────── -->
+  <div class="card span-2" style="animation-delay:1.4s; margin-bottom:24px">
+    <div class="card-label">03 · Coverage Gap</div>
+    <div class="card-title">PMJAY Coverage vs Annual Treatment Cost</div>
+    <div class="card-desc">Visual decomposition of the ₹34L annual Keytruda cost against PMJAY's ₹5L ceiling. Amounts in Indian Rupees.</div>
+    <canvas id="gapChart" height="100"></canvas>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:24px">
+      <div style="text-align:center; padding:16px; background:var(--green-soft); border:1px solid #b2d8be">
+        <div style="font-family:'Bebas Neue'; font-size:28px; color:var(--green)">₹5,00,000</div>
+        <div style="font-size:11px; color:#555; margin-top:4px">PMJAY Annual Limit</div>
+      </div>
+      <div style="text-align:center; padding:16px; background:var(--red-soft); border:1px solid #f0b8b4">
+        <div style="font-family:'Bebas Neue'; font-size:28px; color:var(--red)">₹29,00,000</div>
+        <div style="font-size:11px; color:#555; margin-top:4px">Patient OOP Gap</div>
+      </div>
+      <div style="text-align:center; padding:16px; background:var(--gold-soft); border:1px solid #e0c97a">
+        <div style="font-family:'Bebas Neue'; font-size:28px; color:var(--gold)">₹34,00,000</div>
+        <div style="font-size:11px; color:#555; margin-top:4px">Total Annual Cost</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────────────── -->
+<footer>
+  SOURCES: ICMR NCRP Report 2020 (Table 14.1) · CMS Medicare Part B Drug Spending 2022–23 · MedPAC 2025 Data Book · Merck & Co. FY2023 Annual Report ·
+  NICE Technology Appraisals TA531 / TA885 / TA939 · NHA PMJAY Scheme Documentation · NPPA / NLEM 2022 Notification · World Bank National Accounts FY2023
+  <br>
+  DISCLAIMER: Funnel estimates are author-constructed models based on cited public data. Not empirical statistics. For portfolio and educational purposes only. · Tushar · B.Pharm III · 2025
+</footer>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────────────────────
+const FUNNEL = [
+  { stage:'1', label:'Total Eligible',         n: 173487, pct: 100.0,  color:'#1B4F8A' },
+  { stage:'2', label:'Formally Diagnosed',     n: 104092, pct: 60.0,   color:'#2E6DA4' },
+  { stage:'3', label:'Tertiary Centre',        n:  41637, pct: 24.0,   color:'#4A87BE' },
+  { stage:'4', label:'Any Insurance',          n:  12491, pct:  7.2,   color:'#C49A1A' },
+  { stage:'5', label:'Insurance Covers Drug',  n:    999, pct:  0.58,  color:'#CC6600' },
+  { stage:'6', label:'Affords OOP Balance',    n:    200, pct:  0.12,  color:'#C0392B' },
+  { stage:'7', label:'TREATED (Est.)',         n:    200, pct:  0.12,  color:'#8B0000' },
+];
+
+const SCENARIOS = [
+  { name:'A — Current (0% cut)',    cost: 3400000, color:'#C0392B', label:'₹34L/yr' },
+  { name:'B — 50% Reduction',       cost: 1700000, color:'#CC6600', label:'₹17L/yr' },
+  { name:'C — 90% Reduction',       cost:  340000, color:'#1A5C36', label:'₹3.4L/yr' },
+];
+
+const MAX_COST = 3600000;
+const PMJAY    = 500000;
+const PMJAY_PCT = (PMJAY / MAX_COST) * 100;
+
+// ── FUNNEL ROWS ──────────────────────────────────────────────────────────────
+const funnelWrap = document.getElementById('funnelWrap');
+const MAX_N = FUNNEL[0].n;
+
+FUNNEL.forEach((d, i) => {
+  const barWidth = (d.n / MAX_N) * 100;
+  const row = document.createElement('div');
+  row.className = 'funnel-row';
+  row.style.transitionDelay = `${0.05 * i}s`;
+  row.innerHTML = `
+    <div class="funnel-stage">${d.stage}</div>
+    <div class="funnel-label">${d.label}</div>
+    <div class="funnel-bar-wrap">
+      <div class="funnel-bar" data-width="${barWidth}" style="background:${d.color}">
+        <span class="funnel-bar-num">${d.n.toLocaleString()}</span>
+      </div>
+    </div>
+    <div class="funnel-pct">${d.pct < 1 ? d.pct.toFixed(2) : d.pct.toFixed(1)}%</div>
+  `;
+  funnelWrap.appendChild(row);
+});
+
+// ── SCENARIO ROWS ────────────────────────────────────────────────────────────
+const sg = document.getElementById('scenarioGrid');
+
+SCENARIOS.forEach((s, i) => {
+  const fillPct  = (s.cost / MAX_COST) * 100;
+  const withinPmjay = s.cost <= PMJAY;
+  const gap = Math.max(0, s.cost - PMJAY);
+
+  const item = document.createElement('div');
+  item.className = 'scenario-item';
+  item.innerHTML = `
+    <div class="scenario-head">
+      <span class="scenario-name" style="color:${s.color}">${s.name}</span>
+      <span class="scenario-cost">${s.label}</span>
+    </div>
+    <div class="scenario-track" style="position:relative; overflow:visible">
+      <div class="scenario-fill" data-width="${fillPct}" style="background:${s.color}; position:relative; z-index:1;">
+        <span class="scenario-fill-label">${s.label}</span>
+      </div>
+      <div class="scenario-pmjay" style="left:${PMJAY_PCT}%">
+        ${i === 0 ? `<span class="scenario-pmjay-label">PMJAY ₹5L</span>` : ''}
+      </div>
+    </div>
+    <div class="scenario-status" style="color:${withinPmjay ? 'var(--green)' : 'var(--red)'}">
+      ${withinPmjay ? '✓ Within PMJAY limit — access unlocked' : `✗ Gap: ₹${(gap/100000).toFixed(1)}L above PMJAY limit`}
+    </div>
+  `;
+  sg.appendChild(item);
+});
+
+// ── AFFORDABILITY CHART ──────────────────────────────────────────────────────
+new Chart(document.getElementById('affordChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Annual Cost\n(× Per Capita Income)', 'OOP After Insurance\n(× Per Capita Income)'],
+    datasets: [
+      {
+        label: '🇮🇳 India',
+        data: [17.09, 14.57],
+        backgroundColor: '#C0392B',
+        borderRadius: 2,
+      },
+      {
+        label: '🇺🇸 United States',
+        data: [2.54, 0.51],
+        backgroundColor: '#1B4F8A',
+        borderRadius: 2,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { font: { family: 'DM Sans', size: 12 } } },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}× per capita income`
+        }
+      }
+    },
+    scales: {
+      y: {
+        title: { display: true, text: '× Per Capita Annual Income', font: { family: 'DM Mono', size: 10 } },
+        grid: { color: '#E8E4DD' },
+        ticks: { font: { family: 'DM Mono', size: 10 } }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { font: { family: 'DM Sans', size: 11 }, maxRotation: 0 }
+      }
+    }
+  }
+});
+
+// ── GAP CHART ────────────────────────────────────────────────────────────────
+new Chart(document.getElementById('gapChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Annual Keytruda Cost Breakdown (India)'],
+    datasets: [
+      {
+        label: 'PMJAY Coverage (₹5L)',
+        data: [500000],
+        backgroundColor: '#1A5C36',
+        borderRadius: 0,
+      },
+      {
+        label: 'Patient OOP Gap (₹29L)',
+        data: [2900000],
+        backgroundColor: '#C0392B',
+        borderRadius: 0,
+      }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { labels: { font: { family: 'DM Sans', size: 12 } } },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.dataset.label}: ₹${(ctx.raw/100000).toFixed(0)} lakh`
+        }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        title: { display: true, text: 'INR', font: { family: 'DM Mono', size: 10 } },
+        ticks: {
+          callback: v => `₹${(v/100000).toFixed(0)}L`,
+          font: { family: 'DM Mono', size: 10 }
+        },
+        grid: { color: '#E8E4DD' }
+      },
+      y: { stacked: true, grid: { display: false } }
+    }
+  }
+});
+
+// ── INTERSECTION OBSERVER ────────────────────────────────────────────────────
+const animateBars = (entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+
+    // Funnel bars
+    entry.target.querySelectorAll('.funnel-bar[data-width]').forEach(bar => {
+      setTimeout(() => { bar.style.width = bar.dataset.width + '%'; }, 100);
+    });
+    entry.target.querySelectorAll('.funnel-row').forEach((r, i) => {
+      setTimeout(() => r.classList.add('visible'), i * 80);
+    });
+
+    // Scenario fills
+    entry.target.querySelectorAll('.scenario-fill[data-width]').forEach((f, i) => {
+      setTimeout(() => { f.style.width = f.dataset.width + '%'; }, i * 150 + 200);
+    });
+
+    // Payer bars
+    const usMed = document.getElementById('usMedicare');
+    const usOop = document.getElementById('usOop');
+    const indPmjay = document.getElementById('indPmjay');
+    const indOop = document.getElementById('indOop');
+    if (usMed) { setTimeout(() => { usMed.style.width='80%'; usOop.style.width='20%'; }, 300); }
+    if (indPmjay) { setTimeout(() => { indPmjay.style.width='15%'; indOop.style.width='85%'; }, 400); }
+  });
+};
+
+const observer = new IntersectionObserver(animateBars, { threshold: 0.2 });
+document.querySelectorAll('.card').forEach(c => observer.observe(c));
+
+// ── COUNT UP KPI ─────────────────────────────────────────────────────────────
+document.querySelectorAll('[data-count]').forEach(el => {
+  const target = +el.dataset.count;
+  const fmt = el.dataset.fmt;
+  let start = null;
+  const duration = 1400;
+  const step = (ts) => {
+    if (!start) start = ts;
+    const progress = Math.min((ts - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const val = Math.round(ease * target);
+    el.textContent = fmt === 'comma' ? val.toLocaleString() : val;
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  setTimeout(() => requestAnimationFrame(step), 900);
+});
+</script>
+</body>
+</html>
