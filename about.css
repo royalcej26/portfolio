@@ -1,0 +1,58 @@
+/* ══════════════════════════════════════════════════════
+   ABOUT SECTION
+   ══════════════════════════════════════════════════════ */
+
+.about-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 5rem; align-items: start; }
+
+.about-text p {
+  color: var(--text2);
+  margin-bottom: 1.4rem;
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.9;
+}
+
+.about-text p strong { color: var(--text); font-weight: 500; }
+
+.about-stats { display: flex; flex-direction: column; gap: 0; }
+
+.stat-item {
+  padding: 1.8rem 0;
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.3s ease;
+}
+
+.stat-item:hover::before { transform: scaleY(1); }
+.stat-item:hover { padding-left: 1rem; }
+
+.stat-num {
+  font-family: var(--gsf);
+  font-size: 3rem;
+  font-weight: 900;
+  font-style: italic;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-top: 0.4rem;
+}

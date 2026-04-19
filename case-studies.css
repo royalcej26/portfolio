@@ -1,0 +1,120 @@
+/* ══════════════════════════════════════════════════════
+   CASE STUDIES SECTION
+   ══════════════════════════════════════════════════════ */
+
+.case-studies-section { max-width: 1160px; margin: 0 auto; padding: 0 5rem 8rem; }
+
+.case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+.case-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+  cursor: pointer;
+}
+
+.case-card-inner { padding: 2.5rem; }
+
+.case-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent-dim) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.case-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+.case-card:hover { border-color: var(--border2); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+.case-card:hover::before { opacity: 1; }
+.case-card:hover::after { transform: scaleX(1); }
+
+.case-visual {
+  width: 100%;
+  height: 160px;
+  background: var(--surface2);
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.case-visual-inner {
+  font-family: var(--serif);
+  font-size: 4rem;
+  font-weight: 900;
+  font-style: italic;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(201,168,76,0.2);
+  transition: all 0.4s;
+  user-select: none;
+}
+
+.case-card:hover .case-visual-inner { -webkit-text-stroke-color: rgba(201,168,76,0.5); }
+
+.case-number {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--text3);
+  margin-bottom: 0.5rem;
+}
+
+.case-tag {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.9rem;
+}
+
+.case-title {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.case-desc {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: var(--text3);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.case-cta {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text3);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  display: inline-block;
+  transition: all 0.3s;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+  pointer-events: all;
+  text-decoration: none;
+}
+
+.case-card:hover .case-cta { border-color: var(--accent); color: var(--accent); }

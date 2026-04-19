@@ -1,0 +1,39 @@
+/* ══════════════════════════════════════════════════════
+   CURSOR & NOISE OVERLAY
+   ══════════════════════════════════════════════════════ */
+
+#cursor {
+  position: fixed;
+  width: 10px; height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, background 0.2s, width 0.25s, height 0.25s;
+  mix-blend-mode: normal;
+}
+
+#cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(201,168,76,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform 0.18s ease, width 0.3s, height 0.3s, border-color 0.3s, opacity 0.3s;
+}
+
+body.cursor-hover #cursor { width: 14px; height: 14px; background: var(--accent2); }
+body.cursor-hover #cursor-ring { width: 52px; height: 52px; border-color: rgba(201,168,76,0.7); }
+
+/* Noise texture overlay on entire page */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.6;
+}
