@@ -1,363 +1,1117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tushar Jadhav — Healthcare Analyst</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tushar Jadhav — Healthcare Analyst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex&display=swap" rel="stylesheet">
+<style>
 
-  <!-- ── FONTS ── -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex&display=swap" rel="stylesheet">
+/* ============================================================
+   SECTION 1 — GLOBAL VARIABLES & RESET
+   To change colours, fonts, or spacing site-wide → edit here.
+   ============================================================ */
+:root {
+  --bg: #05080f;
+  --bg2: #080c15;
+  --surface: #0c1120;
+  --surface2: #111827;
+  --border: #1a2540;
+  --border2: #243050;
+  --accent: #c9a84c;
+  --accent2: #e8c97a;
+  --accent-dim: rgba(201,168,76,0.12);
+  --accent-glow: rgba(201,168,76,0.06);
+  --blue: #3d7fc4;
+  --blue-dim: rgba(61,127,196,0.1);
+  --text: #e8edf5;
+  --text2: #9aabc0;
+  --text3: #546278;
+  --serif: 'Playfair Display', Georgia, serif;
+  --gsf: 'Google Sans Flex', 'DM Sans', sans-serif;
+  --sans: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
 
-  <!-- ── STYLES ── (edit individual files to update each section) -->
-  <link rel="stylesheet" href="styles/variables.css">   <!-- colours, fonts, tokens -->
-  <link rel="stylesheet" href="styles/cursor.css">      <!-- custom cursor + noise -->
-  <link rel="stylesheet" href="styles/layout.css">      <!-- sections, dividers, animations -->
-  <link rel="stylesheet" href="styles/nav.css">         <!-- navbar -->
-  <link rel="stylesheet" href="styles/hero.css">        <!-- hero + buttons -->
-  <link rel="stylesheet" href="styles/about.css">       <!-- about + stats -->
-  <link rel="stylesheet" href="styles/case-studies.css"><!-- case study cards -->
-  <link rel="stylesheet" href="styles/sections.css">    <!-- skills, certs, reat, contact, footer -->
-  <link rel="stylesheet" href="styles/responsive.css">  <!-- mobile breakpoints -->
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.7;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+
+/* ============================================================
+   SECTION 2 — CURSOR & NOISE OVERLAY
+   To disable the custom cursor → remove this block + the
+   #cursor and #cursor-ring elements from the HTML below.
+   ============================================================ */
+#cursor {
+  position: fixed;
+  width: 10px; height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, background 0.2s, width 0.25s, height 0.25s;
+  mix-blend-mode: normal;
+}
+
+#cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(201,168,76,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform 0.18s ease, width 0.3s, height 0.3s, border-color 0.3s, opacity 0.3s;
+}
+
+body.cursor-hover #cursor { width: 14px; height: 14px; background: var(--accent2); }
+body.cursor-hover #cursor-ring { width: 52px; height: 52px; border-color: rgba(201,168,76,0.7); }
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.6;
+}
+
+
+/* ============================================================
+   SECTION 3 — NAVIGATION
+   ============================================================ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 1.8rem 5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+nav.scrolled {
+  background: rgba(5,8,15,0.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  padding: 1rem 5rem;
+}
+
+.nav-logo {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+
+.nav-links { display: flex; gap: 3rem; list-style: none; }
+
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0;
+  width: 0; height: 1px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover { color: var(--accent); }
+.nav-links a:hover::after { width: 100%; }
+
+
+/* ============================================================
+   SECTION 4 — HERO SECTION
+   ============================================================ */
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+}
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10rem 5rem 6rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-orb-1 {
+  position: absolute;
+  top: 10%; right: -5%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 65%);
+  pointer-events: none;
+  animation: breathe 8s ease-in-out infinite;
+}
+
+.hero-orb-2 {
+  position: absolute;
+  bottom: 0; left: -10%;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(61,127,196,0.06) 0%, transparent 65%);
+  pointer-events: none;
+  animation: breathe 10s ease-in-out infinite reverse;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1) translateY(0); opacity: 1; }
+  50% { transform: scale(1.1) translateY(-20px); opacity: 0.6; }
+}
+
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.2s forwards;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hero-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+
+.hero-name {
+  font-family: var(--gsf);
+  font-size: clamp(4.5rem, 10vw, 9.5rem);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeUp 0.9s ease 0.4s forwards;
+}
+
+.hero-name .line2 {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--accent);
+  font-style: italic;
+  display: block;
+}
+
+.hero-tagline {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeUp 0.9s ease 0.6s forwards;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.hero-tagline .sep { color: var(--accent); margin: 0 1.2rem; }
+
+.hero-desc {
+  max-width: 480px;
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--text2);
+  line-height: 1.9;
+  margin-bottom: 3.5rem;
+  opacity: 0;
+  animation: fadeUp 0.9s ease 0.8s forwards;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 1.2rem;
+  opacity: 0;
+  animation: fadeUp 0.9s ease 1s forwards;
+}
+
+.btn-primary {
+  padding: 1rem 2.5rem;
+  background: var(--accent);
+  color: #05080f;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent2);
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+
+.btn-primary:hover::before { transform: translateX(0); }
+.btn-primary span { position: relative; z-index: 1; }
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(201,168,76,0.25); }
+
+.btn-outline {
+  padding: 1rem 2.5rem;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-3px); }
+
+.hero-scroll {
+  position: absolute;
+  bottom: 3.5rem; right: 5rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text3);
+  writing-mode: vertical-rl;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  opacity: 0;
+  animation: fadeUp 0.9s ease 1.2s forwards;
+}
+
+.hero-scroll::after {
+  content: '';
+  width: 1px; height: 60px;
+  background: linear-gradient(to bottom, var(--text3), transparent);
+  animation: scrollLine 2s ease-in-out infinite;
+}
+
+@keyframes scrollLine {
+  0%, 100% { transform: scaleY(1); opacity: 1; }
+  50% { transform: scaleY(0.5); opacity: 0.4; }
+}
+
+
+/* ============================================================
+   SECTION 5 — SHARED LAYOUT (sections, dividers, animations)
+   ============================================================ */
+section {
+  padding: 8rem 5rem;
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+.section-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); opacity: 0.6; }
+
+.section-title {
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  font-weight: 700;
+  line-height: 1.12;
+  margin-bottom: 3.5rem;
+  letter-spacing: -0.025em;
+}
+
+.section-title em { font-style: italic; color: var(--accent); }
+
+.divider {
+  width: 100%; height: 1px;
+  background: var(--border);
+  max-width: 1160px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.divider::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0;
+  height: 1px; width: 80px;
+  background: var(--accent);
+  opacity: 0.5;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+[data-magnetic] { transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); }
+
+
+/* ============================================================
+   SECTION 6 — ABOUT
+   ============================================================ */
+.about-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 5rem; align-items: start; }
+
+.about-text p { color: var(--text2); margin-bottom: 1.4rem; font-size: 1rem; font-weight: 300; line-height: 1.9; }
+.about-text p strong { color: var(--text); font-weight: 500; }
+
+.about-stats { display: flex; flex-direction: column; gap: 0; }
+
+.stat-item {
+  padding: 1.8rem 0;
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.3s ease;
+}
+
+.stat-item:hover::before { transform: scaleY(1); }
+.stat-item:hover { padding-left: 1rem; }
+
+.stat-num {
+  font-family: var(--gsf);
+  font-size: 3rem;
+  font-weight: 900;
+  font-style: italic;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-top: 0.4rem;
+}
+
+
+/* ============================================================
+   SECTION 7 — CASE STUDIES
+   ============================================================ */
+.case-studies-section { max-width: 1160px; margin: 0 auto; padding: 0 5rem 8rem; }
+
+.case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+.case-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+  cursor: pointer;
+}
+
+.case-card-inner { padding: 2.5rem; }
+
+.case-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--accent-dim) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.case-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+.case-card:hover { border-color: var(--border2); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+.case-card:hover::before { opacity: 1; }
+.case-card:hover::after { transform: scaleX(1); }
+
+.case-visual {
+  width: 100%; height: 160px;
+  background: var(--surface2);
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.case-visual-inner {
+  font-family: var(--serif);
+  font-size: 4rem;
+  font-weight: 900;
+  font-style: italic;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(201,168,76,0.2);
+  transition: all 0.4s;
+  user-select: none;
+}
+
+.case-card:hover .case-visual-inner { -webkit-text-stroke-color: rgba(201,168,76,0.5); }
+
+.case-number { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.2em; color: var(--text3); margin-bottom: 0.5rem; }
+.case-tag { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.9rem; }
+.case-title { font-family: var(--serif); font-size: 1.2rem; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 1rem; }
+.case-desc { font-size: 0.85rem; font-weight: 300; color: var(--text3); line-height: 1.8; margin-bottom: 2rem; }
+
+.case-cta {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text3);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  display: inline-block;
+  transition: all 0.3s;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+  pointer-events: all;
+  text-decoration: none;
+}
+
+.case-card:hover .case-cta { border-color: var(--accent); color: var(--accent); }
+
+
+/* ============================================================
+   SECTION 8 — SKILLS
+   To add a skill → copy a .skill-block in HTML below.
+   ============================================================ */
+.skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); }
+
+.skill-block {
+  background: var(--bg);
+  padding: 3rem 2.5rem;
+  transition: background 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-block::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 2.5rem; right: 2.5rem;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.skill-block:hover { background: var(--surface); }
+.skill-block:hover::after { transform: scaleX(1); }
+
+.skill-num { font-family: var(--gsf); font-size: 4rem; font-weight: 900; font-style: italic; color: var(--border2); line-height: 1; margin-bottom: 1.5rem; transition: color 0.3s; }
+.skill-block:hover .skill-num { color: var(--accent-dim); }
+.skill-block-title { font-family: var(--serif); font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: 1rem; }
+.skill-block-desc { font-size: 0.87rem; font-weight: 300; color: var(--text2); line-height: 1.85; }
+
+
+/* ============================================================
+   SECTION 9 — CERTIFICATIONS
+   To add a cert → copy a .cert-item in HTML below.
+   ============================================================ */
+.cert-list { border: 1px solid var(--border); overflow: hidden; }
+
+.cert-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s;
+  position: relative;
+}
+
+.cert-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transition: transform 0.3s;
+}
+
+.cert-item:hover::before { transform: scaleY(1); }
+.cert-item:last-child { border-bottom: none; }
+.cert-item:hover { background: var(--surface); padding-left: 3rem; }
+
+.cert-name { font-family: var(--sans); font-size: 0.95rem; font-weight: 500; color: var(--text); }
+.cert-issuer { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-top: 0.3rem; }
+.cert-badge { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); border: 1px solid rgba(201,168,76,0.3); padding: 0.3rem 0.9rem; white-space: nowrap; }
+
+
+/* ============================================================
+   SECTION 10 — REAT (SIDE PROJECT)
+   To update → edit reat-title and reat-desc in HTML below.
+   ============================================================ */
+.reat-section { max-width: 1160px; margin: 0 auto; padding: 0 5rem 8rem; }
+
+.reat-card {
+  border: 1px solid var(--border);
+  padding: 4rem;
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  transition: border-color 0.4s;
+}
+
+.reat-card:hover { border-color: var(--border2); }
+
+.reat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+}
+
+.reat-card-bg {
+  position: absolute;
+  top: -60%; right: -10%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.reat-label {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.reat-dot {
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2.5s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(201,168,76,0.4); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(201,168,76,0); }
+}
+
+.reat-title { font-family: var(--gsf); font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1.2rem; line-height: 1.2; }
+.reat-desc { font-size: 0.92rem; font-weight: 300; color: var(--text2); line-height: 1.9; max-width: 620px; }
+
+
+/* ============================================================
+   SECTION 11 — CONTACT
+   To update contact details → edit .contact-link items in HTML.
+   ============================================================ */
+.contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+
+.contact-text { font-family: var(--serif); font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
+.contact-text em { font-style: italic; color: var(--accent); }
+
+.contact-links { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  text-decoration: none;
+  padding: 1.5rem 2rem;
+  background: var(--bg);
+  transition: all 0.3s;
+  color: var(--text);
+}
+
+.contact-link:hover { background: var(--surface); padding-left: 2.5rem; }
+
+.contact-link-icon { font-family: var(--serif); font-size: 1rem; font-weight: 700; color: var(--accent); width: 24px; text-align: center; flex-shrink: 0; }
+.contact-link-label { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.2rem; }
+.contact-link-value { font-size: 0.88rem; font-weight: 400; color: var(--text); }
+
+
+/* ============================================================
+   SECTION 12 — FOOTER
+   ============================================================ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-left { font-family: var(--serif); font-size: 0.9rem; font-style: italic; color: var(--text3); }
+.footer-right { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text3); }
+
+
+/* ============================================================
+   SECTION 13 — RESPONSIVE / MOBILE
+   All mobile overrides live here.
+   ============================================================ */
+@media (max-width: 900px) {
+  nav, nav.scrolled { padding: 1.2rem 2rem; }
+  .nav-links { display: none; }
+  .hero { padding: 8rem 2rem 5rem; }
+  .hero-scroll { display: none; }
+  section, .case-studies-section, .reat-section { padding: 5rem 2rem; }
+  .about-grid, .case-grid, .skills-grid, .contact-inner { grid-template-columns: 1fr; }
+  .case-studies-section { padding-top: 0; }
+  .reat-section { padding-top: 0; }
+  .reat-card { padding: 2.5rem 2rem; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem; }
+  body { cursor: auto; }
+  #cursor, #cursor-ring { display: none; }
+}
+
+</style>
 </head>
 <body>
 
-  <!-- ══════════════════════════════════════════════════
-       CURSOR ELEMENTS
-       (hidden on mobile via responsive.css)
-  ══════════════════════════════════════════════════ -->
-  <div id="cursor"></div>
-  <div id="cursor-ring"></div>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
 
+<!-- ============================================================
+     NAVIGATION
+     To add a link: copy a <li> and update href + label.
+     ============================================================ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">TJ</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#certifications">Credentials</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
 
-  <!-- ══════════════════════════════════════════════════
-       NAVIGATION
-       To update links: edit the <ul> below.
-       To update the logo: edit .nav-logo.
-  ══════════════════════════════════════════════════ -->
-  <nav id="navbar">
-    <a href="#" class="nav-logo">TJ</a>
-    <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#work">Work</a></li>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#certifications">Credentials</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-  </nav>
+<!-- ============================================================
+     HERO SECTION
+     To update: name, tagline, description, CTA button links.
+     ============================================================ -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-orb-1"></div>
+  <div class="hero-orb-2"></div>
 
+  <h1 class="hero-name">
+    Tushar
+    <span class="line2">Jadhav</span>
+  </h1>
 
-  <!-- ══════════════════════════════════════════════════
-       HERO SECTION
-       To update: name, tagline, description, CTA links.
-  ══════════════════════════════════════════════════ -->
-  <div class="hero">
-    <div class="hero-grid"></div>
-    <div class="hero-orb-1"></div>
-    <div class="hero-orb-2"></div>
+  <p class="hero-tagline">
+    Regulatory Strategy
+    <span class="sep">—</span>
+    Pharma Market Intelligence
+    <span class="sep">—</span>
+    HEOR
+  </p>
 
-    <h1 class="hero-name">
-      Tushar
-      <span class="line2">Jadhav</span>
-    </h1>
+  <p class="hero-desc">
+    Bridging pharmaceutical science and business strategy. Translating complex drug market dynamics into analytical insights that drive decisions.
+  </p>
 
-    <p class="hero-tagline">
-      Regulatory Strategy
-      <span class="sep">—</span>
-      Pharma Market Intelligence
-      <span class="sep">—</span>
-      HEOR
-    </p>
-
-    <p class="hero-desc">
-      Bridging pharmaceutical science and business strategy. Translating complex drug market dynamics into analytical insights that drive decisions.
-    </p>
-
-    <div class="hero-cta">
-      <a href="#work" class="btn-primary" data-magnetic><span>View Case Studies</span></a>
-      <a href="https://www.linkedin.com/in/tusharjadhav26" target="_blank" class="btn-outline" data-magnetic>LinkedIn Profile</a>
-    </div>
-
-    <div class="hero-scroll">Scroll</div>
+  <div class="hero-cta">
+    <a href="#work" class="btn-primary" data-magnetic><span>View Case Studies</span></a>
+    <a href="https://www.linkedin.com/in/tusharjadhav26" target="_blank" class="btn-outline" data-magnetic>LinkedIn Profile</a>
   </div>
 
+  <div class="hero-scroll">Scroll</div>
+</div>
 
-  <!-- ══════════════════════════════════════════════════
-       ABOUT SECTION
-       To update: bio paragraphs and stat numbers/labels.
-  ══════════════════════════════════════════════════ -->
-  <section id="about">
-    <p class="section-eyebrow">About</p>
-    <h2 class="section-title reveal">Pharmacy meets<br><em>strategic thinking</em></h2>
-    <div class="about-grid">
-
-      <div class="about-text reveal">
-        <p>I am a <strong>B Pharm student</strong> at a PCI-accredited institution with a parallel focus on healthcare analytics and pharma market strategy. My academic grounding in pharmaceutical sciences gives me a technical edge that most business analysts lack — and my consulting orientation gives me a lens that most pharmacists don't apply.</p>
-        <p>My work sits at the intersection of <strong>regulatory intelligence, market access, and HEOR</strong> — areas where understanding a molecule's journey from clinical trial to commercial market creates disproportionate analytical value.</p>
-      </div>
-
-      <!-- ── STATS — update numbers and labels freely ── -->
-      <div class="about-stats reveal">
-        <div class="stat-item">
-          <div class="stat-num">4</div>
-          <div class="stat-label">Pharma Market Case Studies</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">2</div>
-          <div class="stat-label">Certifications Completed</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">1</div>
-          <div class="stat-label">SaaS Product in Development</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">3rd</div>
-          <div class="stat-label">Year B Pharm — PCI Syllabus</div>
-        </div>
-      </div>
-
+<!-- ============================================================
+     ABOUT SECTION
+     To update: edit paragraphs and stat numbers/labels below.
+     ============================================================ -->
+<section id="about">
+  <p class="section-eyebrow">About</p>
+  <h2 class="section-title reveal">Pharmacy meets<br><em>strategic thinking</em></h2>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>I am a <strong>B Pharm student</strong> at a PCI-accredited institution with a parallel focus on healthcare analytics and pharma market strategy. My academic grounding in pharmaceutical sciences gives me a technical edge that most business analysts lack — and my consulting orientation gives me a lens that most pharmacists don't apply.</p>
+      <p>My work sits at the intersection of <strong>regulatory intelligence, market access, and HEOR</strong> — areas where understanding a molecule's journey from clinical trial to commercial market creates disproportionate analytical value.</p>
     </div>
-  </section>
-
-  <div class="divider"></div>
-
-
-  <!-- ══════════════════════════════════════════════════
-       CASE STUDIES SECTION
-       To add a new card: copy one .case-card block,
-       update the number, tag, title, desc, and links.
-  ══════════════════════════════════════════════════ -->
-  <div class="case-studies-section" id="work">
-    <p class="section-eyebrow">Case Studies</p>
-    <h2 class="section-title reveal">Analytical work on<br><em>real market events</em></h2>
-
-    <div class="case-grid reveal">
-
-      <!-- CARD 1: KEYTRUDA -->
-      <div class="case-card">
-        <div class="case-visual">
-          <div class="case-visual-inner">Kx</div>
-        </div>
-        <div class="case-card-inner">
-          <div class="case-number">01 / 04</div>
-          <div class="case-tag">Oncology · Market Access</div>
-          <h3 class="case-title">Keytruda's Blockbuster Strategy — Decoding Merck's $25B Franchise</h3>
-          <p class="case-desc">Deep-dive into how pembrolizumab became the world's best-selling drug through indication expansion, PD-L1 biomarker strategy, and payer negotiation.</p>
-          <div style="display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:auto;">
-            <a href="https://portfolio-sand-eight-ozc0jvb5mb.vercel.app/professional_dashboard.html" target="_blank" class="case-cta">View Dashboard</a>
-            <a href="https://drive.google.com/file/d/1fLE4uw_LO3_p70n9zFQpvaViI0unWfXP/view?usp=drive_link" target="_blank" class="case-cta">Download PDF</a>
-            <a href="https://docs.google.com/spreadsheets/d/1zujYqQAF8YVbAbsEsq8AswLGrRjnG9Uw/edit?usp=drive_link" target="_blank" class="case-cta">Download Excel</a>
-          </div>
-        </div>
+    <!-- STATS — update the numbers and labels freely -->
+    <div class="about-stats reveal">
+      <div class="stat-item">
+        <div class="stat-num">4</div>
+        <div class="stat-label">Pharma Market Case Studies</div>
       </div>
-
-      <!-- CARD 2: GLP-1 WARS -->
-      <div class="case-card">
-        <div class="case-visual">
-          <div class="case-visual-inner">G1</div>
-        </div>
-        <div class="case-card-inner">
-          <div class="case-number">02 / 04</div>
-          <div class="case-tag">Metabolic · Competitive Landscape</div>
-          <h3 class="case-title">GLP-1 Wars — Novo Nordisk vs. Eli Lilly Market Battle</h3>
-          <p class="case-desc">Competitive intelligence analysis of semaglutide vs. tirzepatide — pipeline strategy, pricing dynamics, and the race for obesity market dominance.</p>
-          <div style="margin-top:auto;">
-            <a href="https://drive.google.com/file/d/1iZ7aoA708cNXct08Pzp27yjNposmz4qQ/view?usp=drive_link" target="_blank" class="case-cta">Full Report on Request</a>
-          </div>
-        </div>
+      <div class="stat-item">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Certifications Completed</div>
       </div>
-
-      <!-- CARD 3: MONTELUKAST -->
-      <div class="case-card">
-        <div class="case-visual">
-          <div class="case-visual-inner">Mx</div>
-        </div>
-        <div class="case-card-inner">
-          <div class="case-number">03 / 04</div>
-          <div class="case-tag">Generics · Regulatory Risk</div>
-          <h3 class="case-title">Montelukast Black Box — How an FDA Warning Reshaped a Generic Market</h3>
-          <p class="case-desc">Analysis of the FDA black box warning on montelukast, its market adaptation impact, prescriber behaviour shift, and generic manufacturer response.</p>
-          <div style="margin-top:auto;">
-            <a href="https://drive.google.com/file/d/1by7OSRlCT5wtags-tfSqcyKpq5AtVGBd/view?usp=drive_link" target="_blank" class="case-cta">Download PDF</a>
-          </div>
-        </div>
+      <div class="stat-item">
+        <div class="stat-num">1</div>
+        <div class="stat-label">SaaS Product in Development</div>
       </div>
-
-      <!-- CARD 4: TYPE 2 DIABETES -->
-      <div class="case-card">
-        <div class="case-visual">
-          <div class="case-visual-inner">T2</div>
-        </div>
-        <div class="case-card-inner">
-          <div class="case-number">04 / 04</div>
-          <div class="case-tag">HEOR · Market Sizing</div>
-          <h3 class="case-title">Type 2 Diabetes Drug Market — India Landscape Analysis</h3>
-          <p class="case-desc">Cost and savings analysis of branded vs. generic Metformin 500mg in the Indian market, with formulary strategy and access model insights.</p>
-          <div style="margin-top:auto;">
-            <a href="https://docs.google.com/spreadsheets/d/1PYyX3LwehGeU8uAC8AFg1TQBaUdrvKmk/edit?usp=drive_link" target="_blank" class="case-cta">Download Excel</a>
-          </div>
-        </div>
+      <div class="stat-item">
+        <div class="stat-num">3rd</div>
+        <div class="stat-label">Year B Pharm — PCI Syllabus</div>
       </div>
-
     </div>
-
-    <p style="margin-top:2rem; font-family:var(--mono); font-size:0.68rem; letter-spacing:0.1em; color:var(--text3);">
-      Full PDF reports available on request —
-      <a href="mailto:tusharjadhav239@gmail.com" style="color:var(--accent);text-decoration:none;">tusharjadhav239@gmail.com</a>
-    </p>
   </div>
+</section>
 
-  <div class="divider"></div>
+<div class="divider"></div>
 
+<!-- ============================================================
+     CASE STUDIES
+     To add a new card: copy one full CARD block below,
+     update the number, tag, title, desc, and links.
+     ============================================================ -->
+<div class="case-studies-section" id="work">
+  <p class="section-eyebrow">Case Studies</p>
+  <h2 class="section-title reveal">Analytical work on<br><em>real market events</em></h2>
 
-  <!-- ══════════════════════════════════════════════════
-       SKILLS SECTION
-       To add/edit a skill: copy a .skill-block and update
-       the number, title, and description.
-  ══════════════════════════════════════════════════ -->
-  <section id="skills">
-    <p class="section-eyebrow">Expertise</p>
-    <h2 class="section-title reveal">Where science meets<br><em>strategy</em></h2>
-    <div class="skills-grid reveal">
+  <div class="case-grid reveal">
 
-      <div class="skill-block">
-        <div class="skill-num">01</div>
-        <div class="skill-block-title">Regulatory Intelligence</div>
-        <div class="skill-block-desc">Understanding drug approval pathways, post-marketing surveillance frameworks, and regulatory signal detection. Translating regulatory events into commercial risk and opportunity assessments.</div>
+    <!-- CARD 1: KEYTRUDA -->
+    <div class="case-card">
+      <div class="case-visual"><div class="case-visual-inner">Kx</div></div>
+      <div class="case-card-inner">
+        <div class="case-number">01 / 04</div>
+        <div class="case-tag">Oncology · Market Access</div>
+        <h3 class="case-title">Keytruda's Blockbuster Strategy — Decoding Merck's $25B Franchise</h3>
+        <p class="case-desc">Deep-dive into how pembrolizumab became the world's best-selling drug through indication expansion, PD-L1 biomarker strategy, and payer negotiation.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:auto;">
+          <a href="https://portfolio-sand-eight-ozc0jvb5mb.vercel.app/professional_dashboard.html" target="_blank" class="case-cta">View Dashboard</a>
+          <a href="https://drive.google.com/file/d/1fLE4uw_LO3_p70n9zFQpvaViI0unWfXP/view?usp=drive_link" target="_blank" class="case-cta">Download PDF</a>
+          <a href="https://docs.google.com/spreadsheets/d/1zujYqQAF8YVbAbsEsq8AswLGrRjnG9Uw/edit?usp=drive_link" target="_blank" class="case-cta">Download Excel</a>
+        </div>
       </div>
-
-      <div class="skill-block">
-        <div class="skill-num">02</div>
-        <div class="skill-block-title">HEOR & Market Access</div>
-        <div class="skill-block-desc">Health economics and outcomes research frameworks applied to formulary positioning, payer strategy, and value dossier thinking. Grounded in how clinical evidence translates to reimbursement decisions.</div>
-      </div>
-
-      <div class="skill-block">
-        <div class="skill-num">03</div>
-        <div class="skill-block-title">Healthcare Data Analytics</div>
-        <div class="skill-block-desc">Analytical thinking applied to drug market data — prescription trends, pricing dynamics, competitive intelligence, and patient flow analysis. Structured problem decomposition at the core.</div>
-      </div>
-
-      <div class="skill-block">
-        <div class="skill-num">04</div>
-        <div class="skill-block-title">Business Strategy & Consulting</div>
-        <div class="skill-block-desc">Structured approach to pharma business problems — market sizing, competitive landscape analysis, go-to-market strategy, and issue-tree driven problem solving with a consulting lens.</div>
-      </div>
-
     </div>
-  </section>
 
-  <div class="divider"></div>
+    <!-- CARD 2: GLP-1 WARS -->
+    <div class="case-card">
+      <div class="case-visual"><div class="case-visual-inner">G1</div></div>
+      <div class="case-card-inner">
+        <div class="case-number">02 / 04</div>
+        <div class="case-tag">Metabolic · Competitive Landscape</div>
+        <h3 class="case-title">GLP-1 Wars — Novo Nordisk vs. Eli Lilly Market Battle</h3>
+        <p class="case-desc">Competitive intelligence analysis of semaglutide vs. tirzepatide — pipeline strategy, pricing dynamics, and the race for obesity market dominance.</p>
+        <div style="margin-top:auto;">
+          <a href="https://drive.google.com/file/d/1iZ7aoA708cNXct08Pzp27yjNposmz4qQ/view?usp=drive_link" target="_blank" class="case-cta">Full Report on Request</a>
+        </div>
+      </div>
+    </div>
 
+    <!-- CARD 3: MONTELUKAST -->
+    <div class="case-card">
+      <div class="case-visual"><div class="case-visual-inner">Mx</div></div>
+      <div class="case-card-inner">
+        <div class="case-number">03 / 04</div>
+        <div class="case-tag">Generics · Regulatory Risk</div>
+        <h3 class="case-title">Montelukast Black Box — How an FDA Warning Reshaped a Generic Market</h3>
+        <p class="case-desc">Analysis of the FDA black box warning on montelukast, its market adaptation impact, prescriber behaviour shift, and generic manufacturer response.</p>
+        <div style="margin-top:auto;">
+          <a href="https://drive.google.com/file/d/1by7OSRlCT5wtags-tfSqcyKpq5AtVGBd/view?usp=drive_link" target="_blank" class="case-cta">Download PDF</a>
+        </div>
+      </div>
+    </div>
 
-  <!-- ══════════════════════════════════════════════════
-       CERTIFICATIONS SECTION
-       To add a cert: copy a .cert-item block and update
-       the name, issuer, and badge text.
-  ══════════════════════════════════════════════════ -->
-  <section id="certifications">
-    <p class="section-eyebrow">Certifications</p>
-    <h2 class="section-title reveal">Credentials &<br><em>continuous learning</em></h2>
-    <div class="cert-list reveal">
+    <!-- CARD 4: TYPE 2 DIABETES -->
+    <div class="case-card">
+      <div class="case-visual"><div class="case-visual-inner">T2</div></div>
+      <div class="case-card-inner">
+        <div class="case-number">04 / 04</div>
+        <div class="case-tag">HEOR · Market Sizing</div>
+        <h3 class="case-title">Type 2 Diabetes Drug Market — India Landscape Analysis</h3>
+        <p class="case-desc">Cost and savings analysis of branded vs. generic Metformin 500mg in the Indian market, with formulary strategy and access model insights.</p>
+        <div style="margin-top:auto;">
+          <a href="https://docs.google.com/spreadsheets/d/1PYyX3LwehGeU8uAC8AFg1TQBaUdrvKmk/edit?usp=drive_link" target="_blank" class="case-cta">Download Excel</a>
+        </div>
+      </div>
+    </div>
 
-      <div class="cert-item">
+  </div>
+  <p style="margin-top:2rem; font-family:var(--mono); font-size:0.68rem; letter-spacing:0.1em; color:var(--text3);">
+    Full PDF reports available on request —
+    <a href="mailto:tusharjadhav239@gmail.com" style="color:var(--accent);text-decoration:none;">tusharjadhav239@gmail.com</a>
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================================================
+     SKILLS
+     To add a skill: copy a .skill-block and update the
+     number, title, and description.
+     ============================================================ -->
+<section id="skills">
+  <p class="section-eyebrow">Expertise</p>
+  <h2 class="section-title reveal">Where science meets<br><em>strategy</em></h2>
+  <div class="skills-grid reveal">
+
+    <div class="skill-block">
+      <div class="skill-num">01</div>
+      <div class="skill-block-title">Regulatory Intelligence</div>
+      <div class="skill-block-desc">Understanding drug approval pathways, post-marketing surveillance frameworks, and regulatory signal detection. Translating regulatory events into commercial risk and opportunity assessments.</div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-num">02</div>
+      <div class="skill-block-title">HEOR & Market Access</div>
+      <div class="skill-block-desc">Health economics and outcomes research frameworks applied to formulary positioning, payer strategy, and value dossier thinking. Grounded in how clinical evidence translates to reimbursement decisions.</div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-num">03</div>
+      <div class="skill-block-title">Healthcare Data Analytics</div>
+      <div class="skill-block-desc">Analytical thinking applied to drug market data — prescription trends, pricing dynamics, competitive intelligence, and patient flow analysis. Structured problem decomposition at the core.</div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-num">04</div>
+      <div class="skill-block-title">Business Strategy & Consulting</div>
+      <div class="skill-block-desc">Structured approach to pharma business problems — market sizing, competitive landscape analysis, go-to-market strategy, and issue-tree driven problem solving with a consulting lens.</div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ============================================================
+     CERTIFICATIONS
+     To add a cert: copy a .cert-item block and update
+     the name, issuer, and badge text.
+     ============================================================ -->
+<section id="certifications">
+  <p class="section-eyebrow">Certifications</p>
+  <h2 class="section-title reveal">Credentials &<br><em>continuous learning</em></h2>
+  <div class="cert-list reveal">
+
+    <div class="cert-item">
+      <div>
+        <div class="cert-name">National IP Awareness Mission</div>
+        <div class="cert-issuer">NIPAM · Government of India</div>
+      </div>
+      <div class="cert-badge">IP Law</div>
+    </div>
+
+    <div class="cert-item">
+      <div>
+        <div class="cert-name">Drug Abuse Awareness Certification</div>
+        <div class="cert-issuer">NIDA · National Institute on Drug Abuse</div>
+      </div>
+      <div class="cert-badge">Public Health</div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ============================================================
+     REAT — SIDE PROJECT
+     To update: edit the title and description text below.
+     ============================================================ -->
+<div class="reat-section">
+  <p class="section-eyebrow">Side Project</p>
+  <div class="reat-card reveal">
+    <div class="reat-card-bg"></div>
+    <div class="reat-label">
+      <div class="reat-dot"></div>
+      In Active Development
+    </div>
+    <h3 class="reat-title">REAT — Regulatory Intelligence Platform</h3>
+    <p class="reat-desc">A B2B SaaS tool being built for Indian pharmaceutical manufacturers to track regulatory submissions, deadlines, and compliance events in real time. Designed to reduce manual regulatory monitoring overhead for mid-size pharma companies navigating CDSCO and global filing requirements.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================================================
+     CONTACT
+     To update: edit the contact text and .contact-link items.
+     ============================================================ -->
+<section id="contact">
+  <p class="section-eyebrow">Contact</p>
+  <div class="contact-inner">
+    <div class="contact-text reveal">
+      Open to <em>consulting roles,</em> healthcare analytics opportunities, and research collaborations in pharma market intelligence.
+    </div>
+    <div class="contact-links reveal">
+      <a href="mailto:tusharjadhav239@gmail.com" class="contact-link">
+        <div class="contact-link-icon">✉</div>
         <div>
-          <div class="cert-name">National IP Awareness Mission</div>
-          <div class="cert-issuer">NIPAM · Government of India</div>
+          <div class="contact-link-label">Email</div>
+          <div class="contact-link-value">tusharjadhav239@gmail.com</div>
         </div>
-        <div class="cert-badge">IP Law</div>
-      </div>
-
-      <div class="cert-item">
+      </a>
+      <a href="https://www.linkedin.com/in/tusharjadhav26" target="_blank" class="contact-link">
+        <div class="contact-link-icon">in</div>
         <div>
-          <div class="cert-name">Drug Abuse Awareness Certification</div>
-          <div class="cert-issuer">NIDA · National Institute on Drug Abuse</div>
+          <div class="contact-link-label">LinkedIn</div>
+          <div class="contact-link-value">linkedin.com/in/tusharjadhav26</div>
         </div>
-        <div class="cert-badge">Public Health</div>
+      </a>
+      <div class="contact-link" style="cursor:none;">
+        <div class="contact-link-icon">◎</div>
+        <div>
+          <div class="contact-link-label">Location</div>
+          <div class="contact-link-value">Chhatrapati Sambhajinagar, Maharashtra</div>
+        </div>
       </div>
-
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
-
-  <!-- ══════════════════════════════════════════════════
-       REAT — SIDE PROJECT SECTION
-       To update: edit the title and description text below.
-  ══════════════════════════════════════════════════ -->
-  <div class="reat-section">
-    <p class="section-eyebrow">Side Project</p>
-    <div class="reat-card reveal">
-      <div class="reat-card-bg"></div>
-      <div class="reat-label">
-        <div class="reat-dot"></div>
-        In Active Development
-      </div>
-      <h3 class="reat-title">REAT — Regulatory Intelligence Platform</h3>
-      <p class="reat-desc">A B2B SaaS tool being built for Indian pharmaceutical manufacturers to track regulatory submissions, deadlines, and compliance events in real time. Designed to reduce manual regulatory monitoring overhead for mid-size pharma companies navigating CDSCO and global filing requirements.</p>
     </div>
   </div>
+</section>
 
-  <div class="divider"></div>
+<!-- ============================================================
+     FOOTER — update name and year here.
+     ============================================================ -->
+<footer>
+  <div class="footer-left">Tushar Jadhav — Healthcare Analyst</div>
+  <div class="footer-right">Built with intent · 2025</div>
+</footer>
 
+<script>
+/* ============================================================
+   JS 1 — NAV SCROLL
+   Adds frosted-glass effect when page is scrolled past 60px.
+   ============================================================ */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
 
-  <!-- ══════════════════════════════════════════════════
-       CONTACT SECTION
-       To update: edit the contact text and .contact-link items.
-  ══════════════════════════════════════════════════ -->
-  <section id="contact">
-    <p class="section-eyebrow">Contact</p>
-    <div class="contact-inner">
+/* ============================================================
+   JS 2 — REVEAL ON SCROLL
+   Any element with class "reveal" fades up when visible.
+   Add class "reveal" to any new element you want animated.
+   ============================================================ */
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 100);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08 });
+reveals.forEach(el => observer.observe(el));
 
-      <div class="contact-text reveal">
-        Open to <em>consulting roles,</em> healthcare analytics opportunities, and research collaborations in pharma market intelligence.
-      </div>
+/* ============================================================
+   JS 3 — CUSTOM CURSOR
+   Inner dot follows instantly. Ring lags with smooth lerp.
+   ============================================================ */
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
 
-      <div class="contact-links reveal">
-        <a href="mailto:tusharjadhav239@gmail.com" class="contact-link">
-          <div class="contact-link-icon">✉</div>
-          <div>
-            <div class="contact-link-label">Email</div>
-            <div class="contact-link-value">tusharjadhav239@gmail.com</div>
-          </div>
-        </a>
-        <a href="https://www.linkedin.com/in/tusharjadhav26" target="_blank" class="contact-link">
-          <div class="contact-link-icon">in</div>
-          <div>
-            <div class="contact-link-label">LinkedIn</div>
-            <div class="contact-link-value">linkedin.com/in/tusharjadhav26</div>
-          </div>
-        </a>
-        <div class="contact-link" style="cursor:none;">
-          <div class="contact-link-icon">◎</div>
-          <div>
-            <div class="contact-link-label">Location</div>
-            <div class="contact-link-value">Chhatrapati Sambhajinagar, Maharashtra</div>
-          </div>
-        </div>
-      </div>
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  cursor.style.left = mouseX + 'px';
+  cursor.style.top = mouseY + 'px';
+});
 
-    </div>
-  </section>
+function animateRing() {
+  ringX += (mouseX - ringX) * 0.12;
+  ringY += (mouseY - ringY) * 0.12;
+  ring.style.left = ringX + 'px';
+  ring.style.top = ringY + 'px';
+  requestAnimationFrame(animateRing);
+}
+animateRing();
 
+const hoverEls = document.querySelectorAll('a, button, .case-card, .skill-block, .stat-item, .cert-item, [data-magnetic]');
+hoverEls.forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+});
 
-  <!-- ══════════════════════════════════════════════════
-       FOOTER
-       Update your name/year here.
-  ══════════════════════════════════════════════════ -->
-  <footer>
-    <div class="footer-left">Tushar Jadhav — Healthcare Analyst</div>
-    <div class="footer-right">Built with intent · 2025</div>
-  </footer>
+/* ============================================================
+   JS 4 — MAGNETIC BUTTONS + PARALLAX ORBS
+   [data-magnetic] elements shift toward the cursor on hover.
+   Hero orbs drift with mouse movement for a depth effect.
+   ============================================================ */
+document.querySelectorAll('[data-magnetic]').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const rect = btn.getBoundingClientRect();
+    const dx = (e.clientX - rect.left - rect.width / 2) * 0.25;
+    const dy = (e.clientY - rect.top - rect.height / 2) * 0.25;
+    btn.style.transform = `translate(${dx}px, ${dy}px)`;
+  });
+  btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+});
 
-
-  <!-- ── SCRIPTS ── (order matters) -->
-  <script src="js/nav.js"></script>       <!-- navbar scroll behaviour -->
-  <script src="js/reveal.js"></script>    <!-- scroll reveal animations -->
-  <script src="js/cursor.js"></script>    <!-- custom cursor -->
-  <script src="js/effects.js"></script>   <!-- magnetic buttons + parallax orbs -->
-
+document.addEventListener('mousemove', e => {
+  const orb1 = document.querySelector('.hero-orb-1');
+  const orb2 = document.querySelector('.hero-orb-2');
+  if (!orb1 || !orb2) return;
+  const x = (e.clientX / window.innerWidth - 0.5);
+  const y = (e.clientY / window.innerHeight - 0.5);
+  orb1.style.transform = `translate(${x * 30}px, ${y * 20}px)`;
+  orb2.style.transform = `translate(${x * -20}px, ${y * -15}px)`;
+});
+</script>
 </body>
 </html>
